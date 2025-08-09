@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameVault - Payment Configuration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f1419 0%, #1a2332 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #a0a9b8;
+            font-size: 1.1rem;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .payment-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .payment-card:hover {
+            border-color: #00d4ff;
+            transform: translateY(-5px);
+        }
+
+        .payment-card h3 {
+            color: #00d4ff;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #a0a9b8;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #666;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff4757 0%, #ff3742 100%);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #666 0%, #555 100%);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .status-active {
+            background: rgba(46, 213, 115, 0.2);
+            color: #2ed573;
+        }
+
+        .status-inactive {
+            background: rgba(255, 71, 87, 0.2);
+            color: #ff4757;
+        }
+
+        .summary-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .summary-item {
+            text-align: center;
+        }
+
+        .summary-item h4 {
+            color: #00d4ff;
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .summary-item p {
+            color: #a0a9b8;
+            font-size: 0.9rem;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: rgba(46, 213, 115, 0.2);
+            color: #2ed573;
+            border: 1px solid rgba(46, 213, 115, 0.3);
+        }
+
+        .alert-error {
+            background: rgba(255, 71, 87, 0.2);
+            color: #ff4757;
+            border: 1px solid rgba(255, 71, 87, 0.3);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .icon {
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💳 Payment Configuration</h1>
+            <p>Set up your payment methods to receive money from customers</p>
+        </div>
+
+        <div id="alerts"></div>
+
+        <div class="summary-section">
+            <h3 style="color: #00d4ff; margin-bottom: 20px;">📊 Payment Summary</h3>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <h4 id="totalRevenue">$0.00</h4>
+                    <p>Total Revenue</p>
+                </div>
+                <div class="summary-item">
+                    <h4 id="availableBalance">$0.00</h4>
+                    <p>Available Balance</p>
+                </div>
+                <div class="summary-item">
+                    <h4 id="totalPayouts">$0.00</h4>
+                    <p>Total Payouts</p>
+                </div>
+                <div class="summary-item">
+                    <h4 id="pendingPayouts">$0.00</h4>
+                    <p>Pending Payouts</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="payment-methods">
+            <!-- Stripe Configuration -->
+            <div class="payment-card">
+                <h3>
+                    <span class="icon">💳</span>
+                    Stripe
+                    <span id="stripeStatus" class="status-indicator status-inactive">Inactive</span>
+                </h3>
+                <form id="stripeForm">
+                    <div class="form-group">
+                        <label for="stripePublishableKey">Publishable Key</label>
+                        <input type="text" id="stripePublishableKey" placeholder="pk_live_..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="stripeSecretKey">Secret Key</label>
+                        <input type="password" id="stripeSecretKey" placeholder="sk_live_..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="stripeWebhookSecret">Webhook Secret (Optional)</label>
+                        <input type="password" id="stripeWebhookSecret" placeholder="whsec_...">
+                    </div>
+                    <div class="form-group">
+                        <label for="stripeAccountId">Account ID (Optional)</label>
+                        <input type="text" id="stripeAccountId" placeholder="acct_...">
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="stripeActive">
+                        <label for="stripeActive">Enable Stripe payments</label>
+                    </div>
+                    <button type="submit" class="btn">Save Stripe Configuration</button>
+                </form>
+            </div>
+
+            <!-- PayPal Configuration -->
+            <div class="payment-card">
+                <h3>
+                    <span class="icon">🅿️</span>
+                    PayPal
+                    <span id="paypalStatus" class="status-indicator status-inactive">Inactive</span>
+                </h3>
+                <form id="paypalForm">
+                    <div class="form-group">
+                        <label for="paypalClientId">Client ID</label>
+                        <input type="text" id="paypalClientId" placeholder="Your PayPal Client ID" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="paypalClientSecret">Client Secret</label>
+                        <input type="password" id="paypalClientSecret" placeholder="Your PayPal Client Secret" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="paypalEmail">PayPal Email</label>
+                        <input type="email" id="paypalEmail" placeholder="your@paypal.com" required>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="paypalSandbox" checked>
+                        <label for="paypalSandbox">Use Sandbox (for testing)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="paypalActive">
+                        <label for="paypalActive">Enable PayPal payments</label>
+                    </div>
+                    <button type="submit" class="btn">Save PayPal Configuration</button>
+                </form>
+            </div>
+
+            <!-- Bank Account Configuration -->
+            <div class="payment-card">
+                <h3>
+                    <span class="icon">🏦</span>
+                    Bank Account
+                    <span id="bankStatus" class="status-indicator status-inactive">Inactive</span>
+                </h3>
+                <form id="bankForm">
+                    <div class="form-group">
+                        <label for="bankName">Bank Name</label>
+                        <input type="text" id="bankName" placeholder="Your Bank Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bankAccountHolder">Account Holder Name</label>
+                        <input type="text" id="bankAccountHolder" placeholder="Your Full Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bankAccountNumber">Account Number</label>
+                        <input type="text" id="bankAccountNumber" placeholder="Your Account Number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bankRoutingNumber">Routing Number</label>
+                        <input type="text" id="bankRoutingNumber" placeholder="Routing Number">
+                    </div>
+                    <div class="form-group">
+                        <label for="bankSwiftCode">SWIFT Code</label>
+                        <input type="text" id="bankSwiftCode" placeholder="SWIFT Code">
+                    </div>
+                    <div class="form-group">
+                        <label for="bankIban">IBAN</label>
+                        <input type="text" id="bankIban" placeholder="IBAN">
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="bankActive">
+                        <label for="bankActive">Enable bank transfers</label>
+                    </div>
+                    <button type="submit" class="btn">Save Bank Configuration</button>
+                </form>
+            </div>
+
+            <!-- Cryptocurrency Configuration -->
+            <div class="payment-card">
+                <h3>
+                    <span class="icon">₿</span>
+                    Cryptocurrency
+                    <span id="cryptoStatus" class="status-indicator status-inactive">Inactive</span>
+                </h3>
+                <form id="cryptoForm">
+                    <div class="form-group">
+                        <label for="cryptoCurrency">Currency</label>
+                        <select id="cryptoCurrency" required>
+                            <option value="">Select Currency</option>
+                            <option value="BTC">Bitcoin (BTC)</option>
+                            <option value="ETH">Ethereum (ETH)</option>
+                            <option value="USDT">Tether (USDT)</option>
+                            <option value="USDC">USD Coin (USDC)</option>
+                            <option value="BNB">Binance Coin (BNB)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cryptoNetwork">Network</label>
+                        <select id="cryptoNetwork" required>
+                            <option value="">Select Network</option>
+                            <option value="Bitcoin">Bitcoin</option>
+                            <option value="Ethereum">Ethereum</option>
+                            <option value="BSC">Binance Smart Chain</option>
+                            <option value="Polygon">Polygon</option>
+                            <option value="Tron">Tron</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cryptoWalletAddress">Wallet Address</label>
+                        <input type="text" id="cryptoWalletAddress" placeholder="Your wallet address" required>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="cryptoActive">
+                        <label for="cryptoActive">Enable crypto payments</label>
+                    </div>
+                    <button type="submit" class="btn">Save Crypto Configuration</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="summary-section">
+            <h3 style="color: #00d4ff; margin-bottom: 20px;">⚙️ Payout Settings</h3>
+            <form id="payoutSettingsForm">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                    <div class="form-group">
+                        <label for="minimumPayout">Minimum Payout Amount ($)</label>
+                        <input type="number" id="minimumPayout" value="10" min="1" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="payoutFrequency">Payout Frequency</label>
+                        <select id="payoutFrequency">
+                            <option value="daily">Daily</option>
+                            <option value="weekly" selected>Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="commissionPercentage">Commission Percentage (%)</label>
+                        <input type="number" id="commissionPercentage" value="0" min="0" max="100" step="0.1">
+                    </div>
+                </div>
+                <button type="submit" class="btn">Update Payout Settings</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // API Base URL
+        const API_BASE = '/api';
+
+        // Show alert message
+        function showAlert(message, type = 'success') {
+            const alertsContainer = document.getElementById('alerts');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            alertsContainer.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // Update status indicator
+        function updateStatus(method, isActive) {
+            const statusElement = document.getElementById(`${method}Status`);
+            if (isActive) {
+                statusElement.className = 'status-indicator status-active';
+                statusElement.textContent = 'Active';
+            } else {
+                statusElement.className = 'status-indicator status-inactive';
+                statusElement.textContent = 'Inactive';
+            }
+        }
+
+        // Load payment configurations
+        async function loadPaymentConfigs() {
+            try {
+                const response = await fetch(`${API_BASE}/payment-config`);
+                if (response.ok) {
+                    const configs = await response.json();
+                    
+                    configs.forEach(config => {
+                        updateStatus(config.payment_method, config.is_active);
+                        
+                        // Populate form fields
+                        if (config.payment_method === 'stripe') {
+                            document.getElementById('stripePublishableKey').value = config.stripe_publishable_key || '';
+                            document.getElementById('stripeSecretKey').value = config.stripe_secret_key || '';
+                            document.getElementById('stripeWebhookSecret').value = config.stripe_webhook_secret || '';
+                            document.getElementById('stripeAccountId').value = config.stripe_account_id || '';
+                            document.getElementById('stripeActive').checked = config.is_active;
+                        } else if (config.payment_method === 'paypal') {
+                            document.getElementById('paypalClientId').value = config.paypal_client_id || '';
+                            document.getElementById('paypalClientSecret').value = config.paypal_client_secret || '';
+                            document.getElementById('paypalEmail').value = config.paypal_email || '';
+                            document.getElementById('paypalSandbox').checked = config.paypal_sandbox;
+                            document.getElementById('paypalActive').checked = config.is_active;
+                        } else if (config.payment_method === 'bank') {
+                            document.getElementById('bankName').value = config.bank_name || '';
+                            document.getElementById('bankAccountHolder').value = config.bank_account_holder || '';
+                            document.getElementById('bankAccountNumber').value = config.bank_account_number || '';
+                            document.getElementById('bankRoutingNumber').value = config.bank_routing_number || '';
+                            document.getElementById('bankSwiftCode').value = config.bank_swift_code || '';
+                            document.getElementById('bankIban').value = config.bank_iban || '';
+                            document.getElementById('bankActive').checked = config.is_active;
+                        } else if (config.payment_method === 'crypto') {
+                            document.getElementById('cryptoCurrency').value = config.crypto_currency || '';
+                            document.getElementById('cryptoNetwork').value = config.crypto_network || '';
+                            document.getElementById('cryptoWalletAddress').value = config.crypto_wallet_address || '';
+                            document.getElementById('cryptoActive').checked = config.is_active;
+                        }
+                        
+                        // Update payout settings
+                        document.getElementById('minimumPayout').value = config.minimum_payout || 10;
+                        document.getElementById('payoutFrequency').value = config.payout_frequency || 'weekly';
+                        document.getElementById('commissionPercentage').value = config.commission_percentage || 0;
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading payment configs:', error);
+            }
+        }
+
+        // Load payout summary
+        async function loadPayoutSummary() {
+            try {
+                const response = await fetch(`${API_BASE}/payouts/summary`);
+                if (response.ok) {
+                    const summary = await response.json();
+                    document.getElementById('totalRevenue').textContent = `$${summary.total_revenue.toFixed(2)}`;
+                    document.getElementById('availableBalance').textContent = `$${summary.available_balance.toFixed(2)}`;
+                    document.getElementById('totalPayouts').textContent = `$${summary.total_payouts.toFixed(2)}`;
+                    document.getElementById('pendingPayouts').textContent = `$${summary.pending_payouts.toFixed(2)}`;
+                }
+            } catch (error) {
+                console.error('Error loading payout summary:', error);
+            }
+        }
+
+        // Save payment configuration
+        async function savePaymentConfig(method, data) {
+            try {
+                const response = await fetch(`${API_BASE}/payment-config`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        payment_method: method,
+                        ...data
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showAlert(result.message, 'success');
+                    updateStatus(method, data.is_active);
+                } else {
+                    showAlert(result.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Error saving configuration', 'error');
+                console.error('Error:', error);
+            }
+        }
+
+        // Form event listeners
+        document.getElementById('stripeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await savePaymentConfig('stripe', {
+                stripe_publishable_key: document.getElementById('stripePublishableKey').value,
+                stripe_secret_key: document.getElementById('stripeSecretKey').value,
+                stripe_webhook_secret: document.getElementById('stripeWebhookSecret').value,
+                stripe_account_id: document.getElementById('stripeAccountId').value,
+                is_active: document.getElementById('stripeActive').checked,
+                minimum_payout: parseFloat(document.getElementById('minimumPayout').value),
+                payout_frequency: document.getElementById('payoutFrequency').value,
+                commission_percentage: parseFloat(document.getElementById('commissionPercentage').value)
+            });
+        });
+
+        document.getElementById('paypalForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await savePaymentConfig('paypal', {
+                paypal_client_id: document.getElementById('paypalClientId').value,
+                paypal_client_secret: document.getElementById('paypalClientSecret').value,
+                paypal_email: document.getElementById('paypalEmail').value,
+                paypal_sandbox: document.getElementById('paypalSandbox').checked,
+                is_active: document.getElementById('paypalActive').checked,
+                minimum_payout: parseFloat(document.getElementById('minimumPayout').value),
+                payout_frequency: document.getElementById('payoutFrequency').value,
+                commission_percentage: parseFloat(document.getElementById('commissionPercentage').value)
+            });
+        });
+
+        document.getElementById('bankForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await savePaymentConfig('bank', {
+                bank_name: document.getElementById('bankName').value,
+                bank_account_holder: document.getElementById('bankAccountHolder').value,
+                bank_account_number: document.getElementById('bankAccountNumber').value,
+                bank_routing_number: document.getElementById('bankRoutingNumber').value,
+                bank_swift_code: document.getElementById('bankSwiftCode').value,
+                bank_iban: document.getElementById('bankIban').value,
+                is_active: document.getElementById('bankActive').checked,
+                minimum_payout: parseFloat(document.getElementById('minimumPayout').value),
+                payout_frequency: document.getElementById('payoutFrequency').value,
+                commission_percentage: parseFloat(document.getElementById('commissionPercentage').value)
+            });
+        });
+
+        document.getElementById('cryptoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await savePaymentConfig('crypto', {
+                crypto_currency: document.getElementById('cryptoCurrency').value,
+                crypto_network: document.getElementById('cryptoNetwork').value,
+                crypto_wallet_address: document.getElementById('cryptoWalletAddress').value,
+                is_active: document.getElementById('cryptoActive').checked,
+                minimum_payout: parseFloat(document.getElementById('minimumPayout').value),
+                payout_frequency: document.getElementById('payoutFrequency').value,
+                commission_percentage: parseFloat(document.getElementById('commissionPercentage').value)
+            });
+        });
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPaymentConfigs();
+            loadPayoutSummary();
+        });
+    </script>
+</body>
+</html>
+
